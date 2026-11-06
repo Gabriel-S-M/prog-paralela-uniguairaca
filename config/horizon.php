@@ -97,8 +97,10 @@ return [
     */
 
     'waits' => [
+        'redis:high' => 30,
         'redis:default' => 60,
-        'redis:save-lead' => 60
+        'redis:bulk' => 120,
+        'redis:save-lead' => 60,
     ],
 
     /*
@@ -198,6 +200,32 @@ return [
     */
 
     'defaults' => [
+        'supervisor-crm-high' => [
+            'connection' => 'redis',
+            'queue' => ['high'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 2,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 128,
+            'tries' => 3,
+            'timeout' => 60,
+            'nice' => 0,
+        ],
+        'supervisor-crm-related' => [
+            'connection' => 'redis',
+            'queue' => ['default', 'bulk'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 5,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 128,
+            'tries' => 3,
+            'timeout' => 60,
+            'nice' => 0,
+        ],
         'supervisor-1' => [
             'connection' => 'redis',
             'queue' => ['default'],
@@ -229,6 +257,16 @@ return [
 
     'environments' => [
         'production' => [
+            'supervisor-crm-high' => [
+                'maxProcesses' => 4,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+            ],
+            'supervisor-crm-related' => [
+                'maxProcesses' => 12,
+                'balanceMaxShift' => 2,
+                'balanceCooldown' => 3,
+            ],
             'supervisor-1' => [
                 'maxProcesses' => 10,
                 'balanceMaxShift' => 1,
@@ -243,6 +281,12 @@ return [
         ],
 
         'local' => [
+            'supervisor-crm-high' => [
+                'maxProcesses' => 2,
+            ],
+            'supervisor-crm-related' => [
+                'maxProcesses' => 5,
+            ],
             'supervisor-1' => [
                 'maxProcesses' => 3,
             ],

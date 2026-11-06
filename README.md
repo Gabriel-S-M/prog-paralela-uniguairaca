@@ -94,6 +94,12 @@ docker exec -it laravel_app php artisan db:seed --class=UsersTableSeeder
 
 O worker de filas roda via [Laravel Horizon](https://laravel.com/docs/horizon) no container `horizon` (sobe automaticamente com `docker compose up`). O dashboard fica disponível em `http://localhost:8010/horizon`.
 
+### Webhook CRM (avaliação)
+
+Envie no Postman uma requisição `POST` para `http://localhost:8000/api/v1/webhooks/crm`, com `Content-Type: application/json` e o JSON no formato `{ "deal": { ... } }` informado no enunciado. Um payload válido retorna `202 Accepted` com `request_id` e `deal_id`; o processamento continua em background.
+
+Antes do envio, aplique as migrations (`php artisan migrate`) e mantenha Redis/Horizon ativos. O job principal grava negócio e organização na fila `high`; contatos vão para `default`, e itens, atividades, campos customizados e metadados para `bulk`. Consulte `/horizon` e `storage/logs/laravel.log` para acompanhar o processamento.
+
 ## 🌐 ngrok (expor a aplicação publicamente)
 
 O container `ngrok` **não sobe automaticamente** junto com os demais (usa `profiles`). Para usá-lo:
